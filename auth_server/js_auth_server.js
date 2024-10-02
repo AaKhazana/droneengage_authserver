@@ -189,13 +189,16 @@ function fn_newLoginCard (p_accountName, p_accessCode, p_actorType, p_group, p_a
     }
     
 
+    console.log("Checking app version!!!!");
     const c_reply = fn_checkAppVersion (p_app, p_version, p_extra);
 
     if (c_reply != null)
     {
-        
+        console.log("issue with app version");
         fn_callback (c_reply);
     }
+
+    console.log('app version is', c_reply);
 
     v_sessionManager.fn_createLoginCard(p_accountName, p_accessCode, p_actorType, p_group,
         function (p_loginCard)
@@ -224,6 +227,8 @@ function fn_newLoginCard (p_accountName, p_accessCode, p_actorType, p_group, p_a
                 fn_callback(ret);
                 return ;
             }
+
+            console.log("finding server to connect to!!!!");
             
             // get candidate server that should this party should connect to.
             const c_selectedServer = v_commServerManager.fn_selectServerforAccount (p_loginCard);
@@ -236,6 +241,7 @@ function fn_newLoginCard (p_accountName, p_accessCode, p_actorType, p_group, p_a
                 fn_callback(ret);
                 return ;
             }
+            console.log("Server found! connecting");
 
             // request adding party to server
             v_commServerManager.fn_requestCommunicationLogin (p_loginCard, c_selectedServer, 

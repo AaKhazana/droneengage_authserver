@@ -59,6 +59,7 @@ function fn_genericSelect_w_Params (p_dbPool,p_sql,paramlist,fn_successcallback,
     {
         if (err)
         {
+            console.log(err);
 			if (fn_errorcallback != null) fn_errorcallback(err);
 			
             return;
