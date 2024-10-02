@@ -56,28 +56,28 @@ const CONST_TYPE_AndruavMessage_SwarmReport = 1057;
 const CONST_TYPE_AndruavMessage_UpdateSwarm = 1058;
 // CODEBLOCK_END
 
-const CONST_TYPE_AndruavMessage_CommSignalsStatus   = 1059;
-const CONST_TYPE_AndruavMessage_Sync_EventFire      = 1061;
-const CONST_TYPE_AndruavMessage_SearchTargetList    = 1062;
-const CONST_TYPE_AndruavMessage_UdpProxy_Info       = 1071
-const CONST_TYPE_AndruavMessage_Unit_Name           = 1072
+const CONST_TYPE_AndruavMessage_CommSignalsStatus = 1059;
+const CONST_TYPE_AndruavMessage_Sync_EventFire = 1061;
+const CONST_TYPE_AndruavMessage_SearchTargetList = 1062;
+const CONST_TYPE_AndruavMessage_UdpProxy_Info = 1071
+const CONST_TYPE_AndruavMessage_Unit_Name = 1072
 
 
 // Binary Messages
-const CONST_TYPE_AndruavMessage_LightTelemetry      = 2022;
+const CONST_TYPE_AndruavMessage_LightTelemetry = 2022;
 
 // new Andruav Messages 2019
-const CONST_TYPE_AndruavMessage_ServoChannel        = 6001;
-const CONST_TYPE_AndruavBinaryMessage_ServoOutput   = 6501;
-const CONST_TYPE_AndruavBinaryMessage_Mavlink       = 6502;
+const CONST_TYPE_AndruavMessage_ServoChannel = 6001;
+const CONST_TYPE_AndruavBinaryMessage_ServoOutput = 6501;
+const CONST_TYPE_AndruavBinaryMessage_Mavlink = 6502;
 
 // System Messages
-const CONST_TYPE_AndruavSystem_LoadTasks            = 9001;
-const CONST_TYPE_AndruavSystem_SaveTasks            = 9002;
-const CONST_TYPE_AndruavSystem_DeleteTasks          = 9003;
-const CONST_TYPE_AndruavSystem_DisableTasks         = 9004;
-const CONST_TYPE_AndruavSystem_LogoutCommServer     = 9006;
-const CONST_TYPE_AndruavSystem_ConnectedCommServer  = 9007;
+const CONST_TYPE_AndruavSystem_LoadTasks = 9001;
+const CONST_TYPE_AndruavSystem_SaveTasks = 9002;
+const CONST_TYPE_AndruavSystem_DeleteTasks = 9003;
+const CONST_TYPE_AndruavSystem_DisableTasks = 9004;
+const CONST_TYPE_AndruavSystem_LogoutCommServer = 9006;
+const CONST_TYPE_AndruavSystem_ConnectedCommServer = 9007;
 
 var message_names = {
     1002: "GPS",

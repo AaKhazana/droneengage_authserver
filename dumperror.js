@@ -1,6 +1,6 @@
 
 exports.dumperror = function dumperror(err) {
-  console.log (err);
+  console.log(err);
 }
 
 
