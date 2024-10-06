@@ -20,6 +20,7 @@ function fn_startExpressServer() {
     //to view es6 capabilities see http://node.green/
     //node v8-options es6 module syntax currently under development (2016/06/25)
     const v_path = require('path');
+    const v_fs = require('fs');
     const v_express = require('express');
     const v_ejsLayouts = require('express-ejs-layouts');
     const v_cookieParser = require('cookie-parser');
@@ -59,19 +60,27 @@ function fn_startExpressServer() {
     c_app.use(v_bodyParser.urlencoded({ extended: false }));
     c_app.use(v_cookieParser());
 
+    c_app.post("/app/location", (req, res) => {
+        // console.log(req.body);
+        if(!req.body.location){
+            return res.status(400).send("Invalid Location Data");
+        }
+        v_fs.writeFileSync("user_location.json", JSON.stringify(req.body));
+        res.status(200).send("Location stored!");
+    });
+
+    c_app.get("/app/location", (req, res) => {
+        if(!v_fs.existsSync("user_location.json")){
+            return res.send("Location not Available!")
+        }
+        const location = JSON.parse(v_fs.readFileSync("user_location.json"));
+        res.send(location);
+    });
+
     //router
     c_router.fn_create(c_app);
 
     var v_https = require('http');
-    // var v_fs = require('fs');
-    // console.log (global.Colors.Log + "READING " + global.m_serverconfig.m_configuration.ssl_key_file + global.Colors.Reset);
-    // var v_keyFile = v_fs.readFileSync(v_path.join(__dirname, global.m_serverconfig.m_configuration.ssl_key_file));
-    // console.log (global.Colors.Log + "READING " + global.m_serverconfig.m_configuration.ssl_cert_file + global.Colors.Reset);
-    // var v_certFile = v_fs.readFileSync(v_path.join(__dirname, global.m_serverconfig.m_configuration.ssl_cert_file));
-    // var v_options = {
-    //     key: v_keyFile,
-    //     cert: v_certFile
-    // };
 
     // start listening
     v_https.createServer(c_app).listen(c_app.get('port'));
