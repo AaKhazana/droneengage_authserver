@@ -65,13 +65,18 @@ function fn_startExpressServer() {
         if(!req.body.location){
             return res.status(400).send("Invalid Location Data");
         }
-        v_fs.writeFileSync("user_location.json", JSON.stringify(req.body));
+        let locationData = [];
+        if(v_fs.existsSync("user_location.json")) {
+            locationData = JSON.parse(v_fs.readFileSync("user_location.json"));
+        }
+        locationData.push(req.body);
+        v_fs.writeFileSync("user_location.json", JSON.stringify(locationData));
         res.status(200).send("Location stored!");
     });
 
     c_app.get("/app/location", (req, res) => {
         if(!v_fs.existsSync("user_location.json")){
-            return res.send("Location not Available!")
+            return res.send("Location not Available!");
         }
         const location = JSON.parse(v_fs.readFileSync("user_location.json"));
         res.send(location);
