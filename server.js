@@ -85,10 +85,18 @@ function fn_startExpressServer() {
     //router
     c_router.fn_create(c_app);
 
-    var v_https = require('http');
+    var v_https = require('https');
+    console.log (global.Colors.Log + "READING " + global.m_serverconfig.m_configuration.ssl_key_file + global.Colors.Reset);
+    var v_keyFile = v_fs.readFileSync(v_path.join(__dirname, global.m_serverconfig.m_configuration.ssl_key_file));
+    console.log (global.Colors.Log + "READING " + global.m_serverconfig.m_configuration.ssl_cert_file + global.Colors.Reset);
+    var v_certFile = v_fs.readFileSync(v_path.join(__dirname, global.m_serverconfig.m_configuration.ssl_cert_file));
+    var v_options = {
+        key: v_keyFile,
+        cert: v_certFile
+    };
 
     // start listening
-    v_https.createServer(c_app).listen(c_app.get('port'));
+    v_https.createServer(v_options, c_app).listen(c_app.get('port'));
 
     console.log(global.Colors.Success + "[OK] Web Server Started" + global.Colors.Reset);
 }
