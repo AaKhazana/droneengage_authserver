@@ -75,10 +75,10 @@ function fn_startExpressServer() {
     var identity;
 
     c_app.get("/token", (req, res) => {
-        if (!req.body.identity) {
+        if (!req.query.identity) {
             return res.status(401).send({ message: "Invalid Identity!" });
         }
-        identity = req.body.identity;
+        identity = req.query.identity;
 
         const accessToken = new AccessToken(
             process.env.TWILIO_ACCOUNT_SID,
