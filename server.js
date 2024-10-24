@@ -115,7 +115,7 @@ function fn_startExpressServer() {
             // This will connect the caller with your Twilio.Device/client 
             dial.client(identity);
 
-        } else if (requestBody.To) {
+        } else if (req.body.To) {
             // This is an outgoing call
 
             // set the callerId
