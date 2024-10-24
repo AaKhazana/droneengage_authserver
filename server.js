@@ -1,4 +1,5 @@
 const v_pjson = require('./package.json');
+require('dotenv').config();
 
 global.c_CONSTANTS = require("./js_constants");
 global.Colors = require("./helpers/js_colors.js").Colors;
@@ -12,6 +13,14 @@ process.on('SIGINT', function (err) {
     process.exit(err ? 1 : 0);
 });
 
+/**
+ * Checks if the given value is valid as phone number
+ * @param {Number|String} number
+ * @return {Boolean}
+ */
+function isAValidPhoneNumber(number) {
+    return /^[\d\+\-\(\) ]+$/.test(number);
+}
 
 /**
  * launch express server. core of everything
@@ -26,8 +35,11 @@ function fn_startExpressServer() {
     const v_cookieParser = require('cookie-parser');
     const v_bodyParser = require('body-parser');
     const c_router = require('./routes/js_router');
-    const c_cors = require('cors')
-    const c_helmet = require('helmet')
+    const c_cors = require('cors');
+    const c_helmet = require('helmet');
+    const VoiceResponse = require('twilio').twiml.VoiceResponse;
+    const AccessToken = require('twilio').jwt.AccessToken;
+    const VoiceGrant = AccessToken.VoiceGrant;
 
     //setup
     const c_app = v_express();
@@ -60,13 +72,73 @@ function fn_startExpressServer() {
     c_app.use(v_bodyParser.urlencoded({ extended: false }));
     c_app.use(v_cookieParser());
 
+    var identity;
+
+    c_app.get("/token", (req, res) => {
+        if (!req.body.identity) {
+            return res.status(401).send({ message: "Invalid Identity!" });
+        }
+        identity = req.body.identity;
+
+        const accessToken = new AccessToken(
+            process.env.TWILIO_ACCOUNT_SID,
+            process.env.TWILIO_API_KEY,
+            process.env.TWILIO_API_SECRET
+        );
+        accessToken.identity = identity;
+        const grant = new VoiceGrant({
+            outgoingApplicationSid: process.env.TWILIO_TWIML_APP_SID,
+            incomingAllow: true,
+        });
+        accessToken.addGrant(grant);
+
+        // Include identity and token in a JSON response
+        return res.send({
+            identity: identity,
+            token: accessToken.toJwt(),
+        });
+    });
+
+    c_app.post("/voice", (req, res) => {
+        const toNumberOrClientName = req.body.To;
+        const callerId = process.env.TWILIO_CALLER_ID;
+        let twiml = new VoiceResponse();
+
+        // If the request to the /voice endpoint is TO your Twilio Number, 
+        // then it is an incoming call towards your Twilio.Device.
+        if (toNumberOrClientName == callerId) {
+            let dial = twiml.dial();
+
+            // This will connect the caller with your Twilio.Device/client 
+            dial.client(identity);
+
+        } else if (requestBody.To) {
+            // This is an outgoing call
+
+            // set the callerId
+            let dial = twiml.dial({ callerId });
+
+            // Check if the 'To' parameter is a Phone Number or Client Name
+            // in order to use the appropriate TwiML noun 
+            const attr = isAValidPhoneNumber(toNumberOrClientName)
+                ? "number"
+                : "client";
+            dial[attr]({}, toNumberOrClientName);
+        } else {
+            twiml.say("Thanks for calling!");
+        }
+
+        res.set("Content-Type", "text/xml");
+        return res.send(twiml.toString());
+    })
+
     c_app.post("/app/location", (req, res) => {
         // console.log(req.body);
-        if(!req.body.location){
+        if (!req.body.location) {
             return res.status(400).send("Invalid Location Data");
         }
         let locationData = [];
-        if(v_fs.existsSync("user_location.json")) {
+        if (v_fs.existsSync("user_location.json")) {
             locationData = JSON.parse(v_fs.readFileSync("user_location.json"));
         }
         locationData.push(req.body);
@@ -75,7 +147,7 @@ function fn_startExpressServer() {
     });
 
     c_app.get("/app/location", (req, res) => {
-        if(!v_fs.existsSync("user_location.json")){
+        if (!v_fs.existsSync("user_location.json")) {
             return res.send("Location not Available!");
         }
         const location = JSON.parse(v_fs.readFileSync("user_location.json"));
@@ -86,9 +158,9 @@ function fn_startExpressServer() {
     c_router.fn_create(c_app);
 
     var v_https = require('https');
-    console.log (global.Colors.Log + "READING " + global.m_serverconfig.m_configuration.ssl_key_file + global.Colors.Reset);
+    console.log(global.Colors.Log + "READING " + global.m_serverconfig.m_configuration.ssl_key_file + global.Colors.Reset);
     var v_keyFile = v_fs.readFileSync(v_path.join(__dirname, global.m_serverconfig.m_configuration.ssl_key_file));
-    console.log (global.Colors.Log + "READING " + global.m_serverconfig.m_configuration.ssl_cert_file + global.Colors.Reset);
+    console.log(global.Colors.Log + "READING " + global.m_serverconfig.m_configuration.ssl_cert_file + global.Colors.Reset);
     var v_certFile = v_fs.readFileSync(v_path.join(__dirname, global.m_serverconfig.m_configuration.ssl_cert_file));
     var v_options = {
         key: v_keyFile,

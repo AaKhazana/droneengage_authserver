@@ -5,3 +5,4 @@ ssl/
 *.ignore
 logs/
 user_location.json
+.env
