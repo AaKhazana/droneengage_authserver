@@ -84,7 +84,9 @@ function fn_startExpressServer() {
             process.env.TWILIO_ACCOUNT_SID,
             process.env.TWILIO_API_KEY,
             process.env.TWILIO_API_SECRET,
-            identity
+            {
+                identity
+            }
         );
         // accessToken.identity = identity;
         const grant = new VoiceGrant({
